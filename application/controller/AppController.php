@@ -14,23 +14,36 @@ class AppController extends Controller
         //Auth::checkAuthentication();
     }
 
+    public function listaps(){
+        $this->View->renderJSON(AppModel::getAps());
+    }
+
     public function index()
     {
-        $this->View->renderWithoutHeaderAndFooter('app/index', array(
-            'apps' => AppModel::getAps(),
-            'acces_to' => Appmodel::getPerms(),
-        ));
+        $this->View->renderWithoutHeaderAndFooter('app/index');
+    }
+
+    public function enable($app_ID) {
+        Auth::checkAdminLVL1();
+        AppModel::enable($app_ID);
+        Redirect::to('admin');
+    }
+
+    public function disable($app_ID) {
+        Auth::checkAdminLVL1();
+        AppModel::disable($app_ID);
+        Redirect::to('admin');
     }
 
     public function create() {
-        Auth::checkAdminLVL1();
+        Auth::checkAdminLVL2();
         Appmodel::createApp();
-        Redirect::home('admin');
+        Redirect::to('admin');
     }
 
-    public function delete() {
-        Auth::checkAdminLVL1();
-        Appmodel::DeleteApp();
-        Redirect::home('admin');
+    public function delete($app_ID) {
+        Auth::checkAdminLVL2();
+        Appmodel::deleteApp($app_ID);
+        Redirect::to('admin');
     }
 }
