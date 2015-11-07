@@ -26,7 +26,7 @@ class LoginController extends Controller
             Redirect::home();
         } else {
             $data = array('redirect' => Request::get('redirect') ? Request::get('redirect') : NULL);
-            $this->View->render('login/index', $data);
+            $this->View->renderWithoutHeaderAndFooter('login/login', $data);
         }
     }
 
