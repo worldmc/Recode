@@ -14,18 +14,6 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
 /**
- * Configuration for cookie security
- * Quote from PHP manual: Marks the cookie as accessible only through the HTTP protocol. This means that the cookie
- * won't be accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity
- * theft through XSS attacks (although it is not supported by all browsers).
- *
- * IMPORTANT: This will
- *
- * @see php.net/manual/en/session.configuration.php#ini.session.cookie-httponly
- */
-ini_set('session.cookie_httponly', 1);
-
-/**
  * Returns the full configuration.
  * This is used by the core/Config class.
  */
@@ -64,12 +52,18 @@ return array(
 	 * DB_CHARSET The charset, necessary for security reasons. Check Database.php class for more info.
 	 */
 	'DB_TYPE' => 'mysql',
-	'DB_HOST' => '127.0.0.1',
+	'DB_HOST' => 'localhost',
 	'DB_NAME' => 'recode',
 	'DB_USER' => 'recode',
 	'DB_PASS' => 'recode',
 	'DB_PORT' => '3306',
 	'DB_CHARSET' => 'utf8',
+	/**
+	 * Configuration for: Additional login providers: Facebook
+	 * CURRENTLY REMOVED (as Facebook has removed support for the used API version).
+	 * Another, better and up-to-date implementation might come soon.
+	 */
+	'FACEBOOK_LOGIN' => false,
 	/**
 	 * Configuration for: Captcha size
 	 * The currently used Captcha generator (https://github.com/Gregwar/Captcha) also runs without giving a size,
@@ -83,22 +77,9 @@ return array(
 	 * COOKIE_PATH is the path the cookie is valid on, usually "/" to make it valid on the whole domain.
 	 * @see http://stackoverflow.com/q/9618217/1114320
 	 * @see php.net/manual/en/function.setcookie.php
-     *
-     * COOKIE_DOMAIN: The domain where the cookie is valid for.
-     *      COOKIE_DOMAIN mightn't work with "localhost", ".localhost", "127.0.0.1", or ".127.0.0.1". If so, leave it as empty string, false or null.
-     *      @see http://stackoverflow.com/questions/1134290/cookies-on-localhost-with-explicit-domain
-     *      @see http://php.net/manual/en/function.setcookie.php#73107
-     *
-     * COOKIE_SECURE: If the cookie will be transferred through secured connection(SSL). It's highly recommended to set it to true if you have secured connection.
-     * COOKIE_HTTP: If set to true, Cookies that can't be accessed by JS - Highly recommended!
-     * SESSION_RUNTIME: How long should a session cookie be valid by seconds, 604800 = 1 week.
 	 */
 	'COOKIE_RUNTIME' => 1209600,
 	'COOKIE_PATH' => '/',
-    'COOKIE_DOMAIN' => "",
-    'COOKIE_SECURE' => false,
-    'COOKIE_HTTP' => true,
-    'SESSION_RUNTIME' => 604800,
 	/**
 	 * Configuration for: Avatars/Gravatar support
 	 * Set to true if you want to use "Gravatar(s)", a service that automatically gets avatar pictures via using email
@@ -112,12 +93,6 @@ return array(
 	'AVATAR_SIZE' => 44,
 	'AVATAR_JPEG_QUALITY' => 85,
 	'AVATAR_DEFAULT_IMAGE' => 'default.jpg',
-    /**
-     * Configuration for: Encryption Keys
-     *
-     */
-    'ENCRYPTION_KEY' => '6#x0gÊìf^25cL1f$08&',
-    'HMAC_SALT' => '8qk9c^4L6d#15tM8z7n0%',
 	/**
 	 * Configuration for: Email server credentials
 	 *

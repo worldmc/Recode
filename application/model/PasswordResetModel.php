@@ -34,13 +34,13 @@ class PasswordResetModel
 		$user_password_reset_hash = sha1(uniqid(mt_rand(), true));
 
 		// set token (= a random hash string and a timestamp) into database ...
-		$token_set = self::setPasswordResetDatabaseToken($result->user_name, $user_password_reset_hash, $temporary_timestamp);
+		$token_set = PasswordResetModel::setPasswordResetDatabaseToken($result->user_name, $user_password_reset_hash, $temporary_timestamp);
 		if (!$token_set) {
 			return false;
 		}
 
 		// ... and send a mail to the user, containing a link with username and token hash string
-		$mail_sent = self::sendPasswordResetMail($result->user_name, $user_password_reset_hash, $result->user_email);
+		$mail_sent = PasswordResetModel::sendPasswordResetMail($result->user_name, $user_password_reset_hash, $result->user_email);
 		if ($mail_sent) {
 			return true;
 		}
@@ -200,7 +200,7 @@ class PasswordResetModel
 	public static function setNewPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)
 	{
 		// validate the password
-		if (!self::validateResetPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)) {
+		if (!self::validateNewPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)) {
 			return false;
 		}
 
@@ -208,7 +208,7 @@ class PasswordResetModel
 		$user_password_hash = password_hash($user_password_new, PASSWORD_DEFAULT);
 
 		// write the password to database (as hashed and salted string), reset user_password_reset_hash
-		if (self::saveNewUserPassword($user_name, $user_password_hash, $user_password_reset_hash)) {
+		if (PasswordResetModel::saveNewUserPassword($user_name, $user_password_hash, $user_password_reset_hash)) {
 			Session::add('feedback_positive', Text::get('FEEDBACK_PASSWORD_CHANGE_SUCCESSFUL'));
 			return true;
 		} else {
@@ -227,7 +227,7 @@ class PasswordResetModel
 	 *
 	 * @return bool
 	 */
-	public static function validateResetPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)
+	public static function validateNewPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)
 	{
 		if (empty($user_name)) {
 			Session::add('feedback_negative', Text::get('FEEDBACK_USERNAME_FIELD_EMPTY'));
@@ -243,113 +243,6 @@ class PasswordResetModel
 			return false;
 		} else if (strlen($user_password_new) < 6) {
 			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_TOO_SHORT'));
-			return false;
-		}
-
-		return true;
-	}
-
-
-	/**
-	 * Writes the new password to the database
-	 *
-	 * @param string $user_name
-	 * @param string $user_password_hash
-	 *
-	 * @return bool
-	 */
-	public static function saveChangedPassword($user_name, $user_password_hash)
-	{
-		$database = DatabaseFactory::getFactory()->getConnection();
-
-		$sql = "UPDATE users SET user_password_hash = :user_password_hash
-                 WHERE user_name = :user_name
-                 AND user_provider_type = :user_provider_type LIMIT 1";
-		$query = $database->prepare($sql);
-		$query->execute(array(
-			':user_password_hash' => $user_password_hash, ':user_name' => $user_name,
-			':user_provider_type' => 'DEFAULT'
-		));
-
-		// if one result exists, return true, else false. Could be written even shorter btw.
-		return ($query->rowCount() == 1 ? true : false);
-	}
-
-
-	/**
-	 * Validates fields, hashes new password, saves new password
-	 *
-	 * @param string $user_name
-	 * @param string $user_password_current
-	 * @param string $user_password_new
-	 * @param string $user_password_repeat
-	 *
-	 * @return bool
-	 */
-	public static function changePassword($user_name, $user_password_current, $user_password_new, $user_password_repeat)
-	{
-		// validate the passwords
-		if (!self::validatePasswordChange($user_name, $user_password_current, $user_password_new, $user_password_repeat)) {
-			return false;
-		}
-
-		// crypt the password (with the PHP 5.5+'s password_hash() function, result is a 60 character hash string)
-		$user_password_hash = password_hash($user_password_new, PASSWORD_DEFAULT);
-
-		// write the password to database (as hashed and salted string)
-		if (self::saveChangedPassword($user_name, $user_password_hash)) {
-			Session::add('feedback_positive', Text::get('FEEDBACK_PASSWORD_CHANGE_SUCCESSFUL'));
-			return true;
-		} else {
-			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_CHANGE_FAILED'));
-			return false;
-		}
-	}
-
-
-	/**
-	 * Validates current and new passwords
-	 *
-	 * @param string $user_name
-	 * @param string $user_password_current
-	 * @param string $user_password_new
-	 * @param string $user_password_repeat
-	 *
-	 * @return bool
-	 */
-	public static function validatePasswordChange($user_name, $user_password_current, $user_password_new, $user_password_repeat)
-	{
-		$database = DatabaseFactory::getFactory()->getConnection();
-
-		$sql = "SELECT user_password_hash, user_failed_logins FROM users WHERE user_name = :user_name LIMIT 1;";
-		$query = $database->prepare($sql);
-		$query->execute(array(
-			':user_name' => $user_name
-		));
-
-		$user = $query->fetch();
-
-        if ($query->rowCount() == 1) {
-            $user_password_hash = $user->user_password_hash;
-        } else {
-            Session::add('feedback_negative', Text::get('FEEDBACK_USER_DOES_NOT_EXIST'));
-            return false;
-        }
-
-		if (!password_verify($user_password_current, $user_password_hash)) {
-			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_CURRENT_INCORRECT'));
-			return false;
-		} else if (empty($user_password_new) || empty($user_password_repeat)) {
-			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_FIELD_EMPTY'));
-			return false;
-		} else if ($user_password_new !== $user_password_repeat) {
-			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_REPEAT_WRONG'));
-			return false;
-		} else if (strlen($user_password_new) < 6) {
-			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_TOO_SHORT'));
-			return false;
-		} else if ($user_password_current == $user_password_new){
-			Session::add('feedback_negative', Text::get('FEEDBACK_PASSWORD_NEW_SAME_AS_CURRENT'));
 			return false;
 		}
 

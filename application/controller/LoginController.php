@@ -25,8 +25,7 @@ class LoginController extends Controller
         if (LoginModel::isUserLoggedIn()) {
             Redirect::home();
         } else {
-            $data = array('redirect' => Request::get('redirect') ? Request::get('redirect') : NULL);
-            $this->View->renderWithoutHeaderAndFooter('login/login', $data);
+            $this->View->render('login/index');
         }
     }
 
@@ -35,12 +34,6 @@ class LoginController extends Controller
      */
     public function login()
     {
-
-        // check if csrf token is valid
-        if (!Csrf::isTokenValid()) {
-            self::logout();
-        }
-
         // perform the login method, put result (true or false) into $login_successful
         $login_successful = LoginModel::login(
             Request::post('user_name'), Request::post('user_password'), Request::post('set_remember_me_cookie')
@@ -48,11 +41,7 @@ class LoginController extends Controller
 
         // check login status: if true, then redirect user login/showProfile, if false, then to login form again
         if ($login_successful) {
-            if (Request::post('redirect')) {
-                Redirect::to(ltrim(urldecode(Request::post('redirect')), '/'));
-            } else {
-                Redirect::to('login/showProfile');
-            }
+            Redirect::to('login/showProfile');
         } else {
             Redirect::to('login/index');
         }
@@ -66,7 +55,6 @@ class LoginController extends Controller
     {
         LoginModel::logout();
         Redirect::home();
-        exit();
     }
 
     /**
@@ -120,12 +108,6 @@ class LoginController extends Controller
     public function editUsername_action()
     {
         Auth::checkAuthentication();
-
-        // check if csrf token is valid
-        if (!Csrf::isTokenValid()) {
-            self::logout();
-        }
-
         UserModel::editUserName(Request::post('user_name'));
         Redirect::to('login/index');
     }
@@ -290,7 +272,7 @@ class LoginController extends Controller
         // check if this the provided verification code fits the user's verification code
         if (PasswordResetModel::verifyPasswordReset($user_name, $verification_code)) {
             // pass URL-provided variable to view to display them
-            $this->View->render('login/resetPassword', array(
+            $this->View->render('login/changePassword', array(
                 'user_name' => $user_name,
                 'user_password_reset_hash' => $verification_code
             ));
@@ -314,33 +296,6 @@ class LoginController extends Controller
             Request::post('user_password_new'), Request::post('user_password_repeat')
         );
         Redirect::to('login/index');
-    }
-
-    /**
-     * Password Change Page
-     * Show the password form if user is logged in, otherwise redirect to login page
-     */
-    public function changePassword()
-    {
-        Auth::checkAuthentication();
-        $this->View->render('login/changePassword');
-    }
-
-    /**
-     * Password Change Action
-     * Submit form, if retured positive redirect to index, otherwise show the changePassword page again
-     */
-    public function changePassword_action()
-    {
-        $result = PasswordResetModel::changePassword(
-            Session::get('user_name'), Request::post('user_password_current'),
-            Request::post('user_password_new'), Request::post('user_password_repeat')
-        );
-
-        if($result)
-            Redirect::to('login/index');
-        else
-            Redirect::to('login/changePassword');
     }
 
     /**

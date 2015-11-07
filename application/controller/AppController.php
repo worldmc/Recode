@@ -20,7 +20,7 @@ class AppController extends Controller
 
     public function index()
     {
-        $this->View->renderWithoutHeaderAndFooter('app/index');
+        $this->View->renderWithoutHeaderAndFooter('app/start');
     }
 
     public function enable($app_ID) {

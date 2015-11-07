@@ -6,14 +6,14 @@
  * Time: 14:41
  */
 
-class StartControllers extends Controller {
+class StartController extends Controller {
     public function __construct() {
         parent::__construct();
-        Auth::checkAuthentication();
+        //Auth::checkAuthentication();
     }
 
     public function index() {
-        $this->View->renderWithoutHeaderAndFooter('start/start');
+        Redirect::to('app');
     }
 
 

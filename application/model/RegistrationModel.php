@@ -24,7 +24,7 @@ class RegistrationModel
 		$user_password_repeat = Request::post('user_password_repeat');
 
 		// stop registration flow if registrationInputValidation() returns false (= anything breaks the input check rules)
-		$validation_result = self::registrationInputValidation(Request::post('captcha'), $user_name, $user_password_new, $user_password_repeat, $user_email);
+		$validation_result = RegistrationModel::registrationInputValidation(Request::post('captcha'), $user_name, $user_password_new, $user_password_repeat, $user_email);
 		if (!$validation_result) {
 			return false;
 		}
@@ -33,31 +33,24 @@ class RegistrationModel
 		// @see php.net/manual/en/function.password-hash.php for more, especially for potential options
 		$user_password_hash = password_hash($user_password_new, PASSWORD_DEFAULT);
 
-        // make return a bool variable, so both errors can come up at once if needed
-        $return = true;
-
 		// check if username already exists
 		if (UserModel::doesUsernameAlreadyExist($user_name)) {
 			Session::add('feedback_negative', Text::get('FEEDBACK_USERNAME_ALREADY_TAKEN'));
-			$return = false;
+			return false;
 		}
 
 		// check if email already exists
 		if (UserModel::doesEmailAlreadyExist($user_email)) {
 			Session::add('feedback_negative', Text::get('FEEDBACK_USER_EMAIL_ALREADY_TAKEN'));
-			$return = false;
+			return false;
 		}
-
-        	// if Username or Email were false, return false
-        	if(!$return) return false;
 
 		// generate random hash for email verification (40 char string)
 		$user_activation_hash = sha1(uniqid(mt_rand(), true));
 
 		// write user data to database
-		if (!self::writeNewUserToDatabase($user_name, $user_password_hash, $user_email, time(), $user_activation_hash)) {
+		if (!RegistrationModel::writeNewUserToDatabase($user_name, $user_password_hash, $user_email, time(), $user_activation_hash)) {
 			Session::add('feedback_negative', Text::get('FEEDBACK_ACCOUNT_CREATION_FAILED'));
-            return false; // no reason not to return false here
 		}
 
 		// get user_id of the user that has been created, to keep things clean we DON'T use lastInsertId() here
@@ -69,13 +62,13 @@ class RegistrationModel
 		}
 
 		// send verification email
-		if (self::sendVerificationEmail($user_id, $user_email, $user_activation_hash)) {
+		if (RegistrationModel::sendVerificationEmail($user_id, $user_email, $user_activation_hash)) {
 			Session::add('feedback_positive', Text::get('FEEDBACK_ACCOUNT_SUCCESSFULLY_CREATED'));
 			return true;
 		}
 
 		// if verification email sending failed: instantly delete the user
-		self::rollbackRegistrationByUserId($user_id);
+		RegistrationModel::rollbackRegistrationByUserId($user_id);
 		Session::add('feedback_negative', Text::get('FEEDBACK_VERIFICATION_MAIL_SENDING_FAILED'));
 		return false;
 	}
@@ -93,16 +86,14 @@ class RegistrationModel
 	 */
 	public static function registrationInputValidation($captcha, $user_name, $user_password_new, $user_password_repeat, $user_email)
 	{
-        $return = true;
-
 		// perform all necessary checks
 		if (!CaptchaModel::checkCaptcha($captcha)) {
 			Session::add('feedback_negative', Text::get('FEEDBACK_CAPTCHA_WRONG'));
-            $return = false;
+            return false;
 		}
 
-        // if username, email and password are all correctly validated, but make sure they all run on first sumbit
-        if (self::validateUserName($user_name) AND self::validateUserEmail($user_email) AND self::validateUserPassword($user_password_new, $user_password_repeat) AND $return) {
+        // if username, email and password are all correctly validated
+        if (self::validateUserName($user_name) AND self::validateUserEmail($user_email) AND self::validateUserPassword($user_password_new, $user_password_repeat)) {
             return true;
         }
 

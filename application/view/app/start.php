@@ -8,15 +8,15 @@
     <meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, metro, front-end, frontend, web development">
     <meta name="author" content="Sergey Pimenov and Metro UI CSS contributors">
 
-    <link rel='shortcut icon' type='image/x-icon' href='../favicon.ico' />
+    <link rel='shortcut icon' type='image/x-icon' href='<?php echo Config::get('URL')?>favicon.ico' />
     <title>Tiles examples :: Start Screen :: Metro UI CSS - The front-end framework for developing projects on the web in Windows Metro Style</title>
 
-    <link href="../css/metro.css" rel="stylesheet">
-    <link href="../css/metro-icons.css" rel="stylesheet">
+    <link href="<?php echo Config::get('URL')?>css/metro.css" rel="stylesheet">
+    <link href="<?php echo Config::get('URL')?>css/metro-icons.css" rel="stylesheet">
     <!--<link href="../css/metro-responsive.css" rel="stylesheet">-->
 
-    <script src="../js/jquery-2.1.3.min.js"></script>
-    <script src="../js/metro.js"></script>
+    <script src="<?php echo Config::get('URL')?>js/jquery-2.1.3.min.js"></script>
+    <script src="<?php echo Config::get('URL')?>js/metro.js"></script>
     <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
 
     <style>
@@ -64,25 +64,6 @@
 
         }
     </style>
-
-    <script>
-
-        /*
-         * Do not use this is a google analytics fro Metro UI CSS
-         * */
-        if (window.location.hostname !== 'localhost') {
-
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-            ga('create', 'UA-58849249-3', 'auto');
-            ga('send', 'pageview');
-
-        }
-
-    </script>
 
     <script>
         (function($) {
@@ -163,91 +144,8 @@
             toggle.text(text);
         }
 
-        $(function(){
-            var current_tile_area_scheme = localStorage.getItem('tile-area-scheme') || "tile-area-scheme-dark";
-            $(".tile-area").removeClass (function (index, css) {
-                return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
-            }).addClass(current_tile_area_scheme);
 
-            $(".schemeButtons .button").hover(
-                    function(){
-                        var b = $(this);
-                        var scheme = "tile-area-scheme-" +  b.data('scheme');
-                        $(".tile-area").removeClass (function (index, css) {
-                            return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
-                        }).addClass(scheme);
-                    },
-                    function(){
-                        $(".tile-area").removeClass (function (index, css) {
-                            return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
-                        }).addClass(current_tile_area_scheme);
-                    }
-            );
 
-            $(".schemeButtons .button").on("click", function(){
-                var b = $(this);
-                var scheme = "tile-area-scheme-" +  b.data('scheme');
-
-                $(".tile-area").removeClass (function (index, css) {
-                    return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
-                }).addClass(scheme);
-
-                current_tile_area_scheme = scheme;
-                localStorage.setItem('tile-area-scheme', scheme);
-
-                showSettings();
-            });
-        });
-
-        var weather_icons = {
-            'clear-day': 'mif-sun',
-            'clear-night': 'mif-moon2',
-            'rain': 'mif-rainy',
-            'snow': 'mif-snowy3',
-            'sleet': 'mif-weather4',
-            'wind': 'mif-wind',
-            'fog': 'mif-cloudy2',
-            'cloudy': 'mif-cloudy',
-            'partly-cloudy-day': 'mif-cloudy3',
-            'partly-cloudy-night': 'mif-cloud5'
-        };
-
-        var api_key = 'AIzaSyDPfgE0qhVmCcy-FNRLBjO27NbVrFM2abg';
-
-        $(function(){
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position){
-                    var lat = position.coords.latitude, lon = position.coords.longitude;
-                    var pos = lat+','+lon;
-                    var latlng = new google.maps.LatLng(lat, lon);
-                    var geocoder = new google.maps.Geocoder();
-                    $.ajax({
-                        url: '//api.forecast.io/forecast/219588ba41dedc2f1019684e8ac393ad/'+pos+'?units=si',
-                        dataType: 'jsonp',
-                        success: function(data){
-                            //do whatever you want with the data here
-                            geocoder.geocode({latLng: latlng}, function(result, status){
-                                console.log(result[3]);
-                                $("#city_name").html(result[3].formatted_address);
-                            });
-                            var current = data.currently;
-                            //$('#city_name').html(response.city+", "+response.country);
-                            $("#city_temp").html(Math.round(current.temperature)+" &deg;C");
-                            $("#city_weather").html(current.summary);
-                            $("#city_weather_daily").html(data.daily.summary);
-                            $("#weather_icon").addClass(weather_icons[current.icon]);
-                            $("#pressure").html(current.pressure);
-                            $("#ozone").html(current.ozone);
-                            $("#wind_bearing").html(current.windBearing);
-                            $("#wind_speed").html(current.windSpeed);
-                            $("#weather_bg").css({
-                                'background-image': 'url(../images/'+current.icon+'.jpg'+')'
-                            });
-                        }
-                    });
-                });
-            }
-        });
     </script>
 
 </head>
@@ -271,42 +169,21 @@
         </div>
     </div>
 
-    <div data-role="charm" id="charmSettings" data-position="top">
+    <div data-role="charm" id="charmSettings" >
         <h1 class="text-light">Settings</h1>
         <hr class="thin"/>
         <br />
         <div class="schemeButtons">
-            <div class="button square-button tile-area-scheme-dark" data-scheme="dark"></div>
-            <div class="button square-button tile-area-scheme-darkBrown" data-scheme="darkBrown"></div>
-            <div class="button square-button tile-area-scheme-darkCrimson" data-scheme="darkCrimson"></div>
-            <div class="button square-button tile-area-scheme-darkViolet" data-scheme="darkViolet"></div>
-            <div class="button square-button tile-area-scheme-darkMagenta" data-scheme="darkMagenta"></div>
-            <div class="button square-button tile-area-scheme-darkCyan" data-scheme="darkCyan"></div>
-            <div class="button square-button tile-area-scheme-darkCobalt" data-scheme="darkCobalt"></div>
-            <div class="button square-button tile-area-scheme-darkTeal" data-scheme="darkTeal"></div>
-            <div class="button square-button tile-area-scheme-darkEmerald" data-scheme="darkEmerald"></div>
-            <div class="button square-button tile-area-scheme-darkGreen" data-scheme="darkGreen"></div>
-            <div class="button square-button tile-area-scheme-darkOrange" data-scheme="darkOrange"></div>
-            <div class="button square-button tile-area-scheme-darkRed" data-scheme="darkRed"></div>
-            <div class="button square-button tile-area-scheme-darkPink" data-scheme="darkPink"></div>
-            <div class="button square-button tile-area-scheme-darkIndigo" data-scheme="darkIndigo"></div>
-            <div class="button square-button tile-area-scheme-darkBlue" data-scheme="darkBlue"></div>
-            <div class="button square-button tile-area-scheme-lightBlue" data-scheme="lightBlue"></div>
-            <div class="button square-button tile-area-scheme-lightTeal" data-scheme="lightTeal"></div>
-            <div class="button square-button tile-area-scheme-lightOlive" data-scheme="lightOlive"></div>
-            <div class="button square-button tile-area-scheme-lightOrange" data-scheme="lightOrange"></div>
-            <div class="button square-button tile-area-scheme-lightPink" data-scheme="lightPink"></div>
-            <div class="button square-button tile-area-scheme-grayed" data-scheme="grayed"></div>
         </div>
     </div>
 
     <div class="tile-area tile-area-scheme-dark fg-white" style="height: 100%; max-height: 100% !important;">
         <h1 class="tile-area-title">Start</h1>
         <div class="tile-area-controls">
-            <button class="image-button icon-right bg-transparent fg-white bg-hover-dark no-border"><span class="sub-header no-margin text-light">Sergey Pimenov</span> <span class="icon mif-user"></span></button>
+            <button class="image-button icon-right bg-transparent fg-white bg-hover-dark no-border"><span class="sub-header no-margin text-light">$user Name</span> <span class="icon mif-user"></span></button>
             <button class="square-button bg-transparent fg-white bg-hover-dark no-border" onclick="showCharms('#charmSearch')"><span class="mif-search"></span></button>
             <button class="square-button bg-transparent fg-white bg-hover-dark no-border" onclick="showCharms('#charmSettings')"><span class="mif-cog"></span></button>
-            <a href="../tiles.html" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span class="mif-switch"></span></a>
+            <a href="<?php echo Config::get('URL')?>login/logout" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span class="mif-switch"></span></a>
         </div>
 
         <div class="tile-group double">
@@ -353,18 +230,18 @@
             <div class="tile-container">
                 <div class="tile-wide" data-role="tile" data-effect="slideLeft">
                     <div class="tile-content">
-                        <a href="http://google.com/search?q=bear" class="live-slide"><img src="../images/1.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=cat" class="live-slide"><img src="../images/2.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=dog" class="live-slide"><img src="../images/3.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=eagle" class="live-slide"><img src="../images/4.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=fox" class="live-slide"><img src="../images/5.jpg" data-role="fitImage" data-format="fill"></a>
+                        <a href="http://google.com/search?q=bear" class="live-slide"><img src="<?php echo Config::get('URL')?>images/1.jpg" data-role="fitImage" data-format="fill"></a>
+                        <a href="http://google.com/search?q=cat" class="live-slide"><img src="<?php echo Config::get('URL')?>images/2.jpg" data-role="fitImage" data-format="fill"></a>
+                        <a href="http://google.com/search?q=dog" class="live-slide"><img src="<?php echo Config::get('URL')?>images/3.jpg" data-role="fitImage" data-format="fill"></a>
+                        <a href="http://google.com/search?q=eagle" class="live-slide"><img src="<?php echo Config::get('URL')?>images/4.jpg" data-role="fitImage" data-format="fill"></a>
+                        <a href="http://google.com/search?q=fox" class="live-slide"><img src="<?php echo Config::get('URL')?>images/5.jpg" data-role="fitImage" data-format="fill"></a>
                     </div>
                     <div class="tile-label">Gallery</div>
                 </div>
                 <div class="tile" data-role="tile" data-role="tile" data-effect="slideUpDown">
                     <div class="tile-content">
-                        <div class="live-slide"><img src="../images/me.jpg" data-role="fitImage" data-format="fill"></div>
-                        <div class="live-slide"><img src="../images/spface.jpg" data-role="fitImage" data-format="fill"></div>
+                        <div class="live-slide"><img src="<?php echo Config::get('URL')?>images/me.jpg" data-role="fitImage" data-format="fill"></div>
+                        <div class="live-slide"><img src="<?php echo Config::get('URL')?>images/spface.jpg" data-role="fitImage" data-format="fill"></div>
                     </div>
                     <div class="tile-label">Photos</div>
                 </div>
@@ -391,11 +268,11 @@
 
                 <div class="tile-wide bg-orange fg-white" data-role="tile">
                     <div class="tile-content image-set">
-                        <img src="../images/jeki_chan.jpg">
-                        <img src="../images/shvarcenegger.jpg">
-                        <img src="../images/vin_d.jpg">
-                        <img src="../images/jolie.jpg">
-                        <img src="../images/jek_vorobey.jpg">
+                        <img src="<?php echo Config::get('URL')?>images/jeki_chan.jpg">
+                        <img src="<?php echo Config::get('URL')?>images/shvarcenegger.jpg">
+                        <img src="<?php echo Config::get('URL')?>images/vin_d.jpg">
+                        <img src="<?php echo Config::get('URL')?>images/jolie.jpg">
+                        <img src="<?php echo Config::get('URL')?>images/jek_vorobey.jpg">
                     </div>
                 </div>
 
@@ -407,27 +284,27 @@
 
             <div class="tile-small bg-blue" data-role="tile">
                 <div class="tile-content iconic">
-                    <img src="../images/outlook.png" class="icon">
+                    <img src="<?php echo Config::get('URL')?>images/outlook.png" class="icon">
                 </div>
             </div>
             <div class="tile-small bg-darkBlue" data-role="tile">
                 <div class="tile-content iconic">
-                    <img src="../images/word.png" class="icon">
+                    <img src="<?php echo Config::get('URL')?>images/word.png" class="icon">
                 </div>
             </div>
             <div class="tile-small bg-green" data-role="tile">
                 <div class="tile-content iconic">
-                    <img src="../images/excel.png" class="icon">
+                    <img src="<?php echo Config::get('URL')?>images/excel.png" class="icon">
                 </div>
             </div>
             <div class="tile-small bg-red" data-role="tile">
                 <div class="tile-content iconic">
-                    <img src="../images/access.png" class="icon">
+                    <img src="<?php echo Config::get('URL')?>images/access.png" class="icon">
                 </div>
             </div>
             <div class="tile-small bg-orange" data-role="tile">
                 <div class="tile-content iconic">
-                    <img src="../images/powerpoint.png" class="icon">
+                    <img src="<?php echo Config::get('URL')?>images/powerpoint.png" class="icon">
                 </div>
             </div>
         </div>
@@ -437,32 +314,32 @@
             <div class="tile-container">
                 <div class="tile" data-role="tile">
                     <div class="tile-content">
-                        <img src="../images/grid2.jpg" data-role="fitImage" data-format="square">
+                        <img src="<?php echo Config::get('URL')?>images/grid2.jpg" data-role="fitImage" data-format="square">
                     </div>
                 </div>
                 <div class="tile-small" data-role="tile">
                     <div class="tile-content">
-                        <img src="../images/Battlefield_4_Icon.png" data-role="fitImage" data-format="square">
+                        <img src="<?php echo Config::get('URL')?>images/Battlefield_4_Icon.png" data-role="fitImage" data-format="square">
                     </div>
                 </div>
                 <div class="tile-small" data-role="tile">
                     <div class="tile-content">
-                        <img src="../images/Crysis-2-icon.png" data-role="fitImage" data-format="square" data-frame-color="bg-steel">
+                        <img src="<?php echo Config::get('URL')?>images/Crysis-2-icon.png" data-role="fitImage" data-format="square" data-frame-color="bg-steel">
                     </div>
                 </div>
                 <div class="tile-small" data-role="tile">
                     <div class="tile-content">
-                        <img src="../images/WorldofTanks.png" data-role="fitImage" data-format="square" data-frame-color="bg-dark">
+                        <img src="<?php echo Config::get('URL')?>images/WorldofTanks.png" data-role="fitImage" data-format="square" data-frame-color="bg-dark">
                     </div>
                 </div>
                 <div class="tile-small" data-role="tile">
                     <div class="tile-content">
-                        <img src="../images/halo.jpg" data-role="fitImage" data-format="square">
+                        <img src="<?php echo Config::get('URL')?>images/halo.jpg" data-role="fitImage" data-format="square">
                     </div>
                 </div>
                 <div class="tile-wide bg-green fg-white" data-role="tile">
                     <div class="tile-content iconic">
-                        <img src="../images/x-box.png" class="icon">
+                        <img src="<?php echo Config::get('URL')?>images/x-box.png" class="icon">
                     </div>
                     <div class="tile-label">X-Box Live</div>
                 </div>

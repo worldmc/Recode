@@ -1,11 +1,8 @@
 <!doctype html>
 <html>
 <head>
-    <title>HUGE</title>
     <!-- META -->
     <meta charset="utf-8">
-    <!-- send empty favicon fallback to prevent user's browser hitting the server for lots of favicon requests resulting in 404s -->
-    <link rel="icon" href="data:;base64,=">
     <!-- CSS -->
     <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/style.css" />
 </head>
@@ -21,7 +18,7 @@
             <li <?php if (View::checkForActiveController($filename, "index")) { echo ' class="active" '; } ?> >
                 <a href="<?php echo Config::get('URL'); ?>index/index">Index</a>
             </li>
-            <li <?php if (View::checkForActiveController($filename, "profile")) { echo ' class="active" '; } ?> >
+            <li <?php if (View::checkForActiveController($filename, "overview")) { echo ' class="active" '; } ?> >
                 <a href="<?php echo Config::get('URL'); ?>profile/index">Profiles</a>
             </li>
             <?php if (Session::userIsLoggedIn()) { ?>
@@ -61,19 +58,9 @@
                         <a href="<?php echo Config::get('URL'); ?>login/edituseremail">Edit my email</a>
                     </li>
                     <li <?php if (View::checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                        <a href="<?php echo Config::get('URL'); ?>login/changePassword">Change Password</a>
-                    </li>
-                    <li <?php if (View::checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
                         <a href="<?php echo Config::get('URL'); ?>login/logout">Logout</a>
                     </li>
                 </ul>
             </li>
-            <?php if (Session::get("user_account_type") == 7) : ?>
-                <li <?php if (View::checkForActiveController($filename, "admin")) {
-                    echo ' class="active" ';
-                } ?> >
-                    <a href="<?php echo Config::get('URL'); ?>admin/">Admin</a>
-                </li>
-            <?php endif; ?>
         <?php endif; ?>
         </ul>

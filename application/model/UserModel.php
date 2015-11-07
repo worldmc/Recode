@@ -19,25 +19,18 @@ class UserModel
     {
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "SELECT user_id, user_name, user_email, user_active, user_has_avatar, user_deleted FROM users";
+        $sql = "SELECT user_id, user_name, user_email, user_active, user_has_avatar FROM users";
         $query = $database->prepare($sql);
         $query->execute();
 
         $all_users_profiles = array();
 
         foreach ($query->fetchAll() as $user) {
-
-            // all elements of array passed to Filter::XSSFilter for XSS sanitation, have a look into
-            // application/core/Filter.php for more info on how to use. Removes (possibly bad) JavaScript etc from
-            // the user's values
-            array_walk_recursive($user, 'Filter::XSSFilter');
-
             $all_users_profiles[$user->user_id] = new stdClass();
             $all_users_profiles[$user->user_id]->user_id = $user->user_id;
             $all_users_profiles[$user->user_id]->user_name = $user->user_name;
             $all_users_profiles[$user->user_id]->user_email = $user->user_email;
             $all_users_profiles[$user->user_id]->user_active = $user->user_active;
-            $all_users_profiles[$user->user_id]->user_deleted = $user->user_deleted;
             $all_users_profiles[$user->user_id]->user_avatar_link = (Config::get('USE_GRAVATAR') ? AvatarModel::getGravatarLinkByEmail($user->user_email) : AvatarModel::getPublicAvatarFilePathOfUser($user->user_has_avatar, $user->user_id));
         }
 
@@ -53,7 +46,7 @@ class UserModel
     {
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "SELECT user_id, user_name, user_email, user_active, user_has_avatar, user_deleted
+        $sql = "SELECT user_id, user_name, user_email, user_active, user_has_avatar
                 FROM users WHERE user_id = :user_id LIMIT 1";
         $query = $database->prepare($sql);
         $query->execute(array(':user_id' => $user_id));
@@ -69,11 +62,6 @@ class UserModel
         } else {
             Session::add('feedback_negative', Text::get('FEEDBACK_USER_DOES_NOT_EXIST'));
         }
-
-        // all elements of array passed to Filter::XSSFilter for XSS sanitation, have a look into
-        // application/core/Filter.php for more info on how to use. Removes (possibly bad) JavaScript etc from
-        // the user's values
-        array_walk_recursive($user, 'Filter::XSSFilter');
 
         return $user;
     }
@@ -167,7 +155,7 @@ class UserModel
 
         $query = $database->prepare("UPDATE users SET user_email = :user_email WHERE user_id = :user_id LIMIT 1");
         $query->execute(array(':user_email' => $new_user_email, ':user_id' => $user_id));
-        $count = $query->rowCount();
+        $count =  $query->rowCount();
         if ($count == 1) {
             return true;
         }
@@ -199,12 +187,12 @@ class UserModel
         $new_user_name = substr(strip_tags($new_user_name), 0, 64);
 
         // check if new username already exists
-        if (self::doesUsernameAlreadyExist($new_user_name)) {
+        if (UserModel::doesUsernameAlreadyExist($new_user_name)) {
             Session::add('feedback_negative', Text::get('FEEDBACK_USERNAME_ALREADY_TAKEN'));
             return false;
         }
 
-        $status_of_action = self::saveNewUserName(Session::get('user_id'), $new_user_name);
+        $status_of_action = UserModel::saveNewUserName(Session::get('user_id'), $new_user_name);
         if ($status_of_action) {
             Session::set('user_name', $new_user_name);
             Session::add('feedback_positive', Text::get('FEEDBACK_USERNAME_CHANGE_SUCCESSFUL'));
@@ -248,14 +236,14 @@ class UserModel
         $new_user_email = substr(strip_tags($new_user_email), 0, 254);
 
         // check if user's email already exists
-        if (self::doesEmailAlreadyExist($new_user_email)) {
+        if (UserModel::doesEmailAlreadyExist($new_user_email)) {
             Session::add('feedback_negative', Text::get('FEEDBACK_USER_EMAIL_ALREADY_TAKEN'));
             return false;
         }
 
         // write to database, if successful ...
         // ... then write new email to session, Gravatar too (as this relies to the user's email address)
-        if (self::saveNewEmailAddress(Session::get('user_id'), $new_user_email)) {
+        if (UserModel::saveNewEmailAddress(Session::get('user_id'), $new_user_email)) {
             Session::set('user_email', $new_user_email);
             Session::set('user_gravatar_image_url', AvatarModel::getGravatarLinkByEmail($new_user_email));
             Session::add('feedback_positive', Text::get('FEEDBACK_EMAIL_CHANGE_SUCCESSFUL'));
@@ -299,7 +287,7 @@ class UserModel
     {
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "SELECT user_id, user_name, user_email, user_password_hash, user_active,user_deleted, user_suspension_timestamp, user_account_type,
+        $sql = "SELECT user_id, user_name, user_email, user_password_hash, user_active, user_account_type,
                        user_failed_logins, user_last_failed_login
                   FROM users
                  WHERE (user_name = :user_name OR user_email = :user_name)

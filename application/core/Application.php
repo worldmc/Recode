@@ -47,16 +47,10 @@ class Application
                     $this->controller->{$this->action_name}();
                 }
             } else {
-                // load 404 error page
-                require Config::get('PATH_CONTROLLER') . 'ErrorController.php';
-                $this->controller = new ErrorController;
-                $this->controller->error404();
+                header('location: ' . Config::get('URL') . 'error');
             }
         } else {
-            // load 404 error page
-            require Config::get('PATH_CONTROLLER') . 'ErrorController.php';
-            $this->controller = new ErrorController;
-            $this->controller->error404();
+            header('location: ' . Config::get('URL') . 'error');
         }
     }
 

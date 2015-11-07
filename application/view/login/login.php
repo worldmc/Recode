@@ -52,6 +52,9 @@
     </script>
 </head>
 <body class="bg-darkTeal">
+
+<!-- echo out the system feedback (error and success messages) -->
+<?php $this->renderFeedbackMessages(); ?>
     <div class="login-form padding20 block-shadow">
         <h1 class="text-light">Login to service</h1>
         <hr class="thin"/>
@@ -68,19 +71,15 @@
                 <label for="user_password">User password:</label>
                 <input type="password" name="user_password" id="user_password">
                 <button class="button helper-button reveal"><span class="mif-looks"></span></button>
-                <label for="set_remember_me_cookie" class="remember-me-label">
-                    <input type="checkbox" name="set_remember_me_cookie" class="remember-me-checkbox" />
-                    Remember me for 2 weeks
-                </label>
             </div>
             <br />
             <br />
-            <div class="form-actions"><input type="submit" class="login-submit-button" value="Log in"/>
+            <div class="form-actions">
                 <button type="submit" class="button primary">Login to...</button>
                 <button type="button" class="button link">Cancel</button>
             </div>
 
-            <!--<input type="text" name="user_name" placeholder="Username or email" required />-->
+
 
 
             <!-- when a user navigates to a page that's only accessible for logged a logged-in user, then
@@ -101,9 +100,6 @@
             <input type="hidden" name="csrf_token" value="<?= Csrf::makeToken(); ?>" />
 
         </form>
-        <div class="link-forgot-my-password">
-            <a href="<?php echo Config::get('URL'); ?>login/requestPasswordReset">I forgot my password</a>
-        </div>
     </div>
 
 </body>

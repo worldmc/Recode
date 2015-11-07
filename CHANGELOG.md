@@ -2,33 +2,6 @@
 
 For the newest (und unstable) version always check the develop branch.
 
-## develop branch
-
-- [panique] [#729] Fix, mail sending now returns true or false success status (https://github.com/panique/huge/issues/729)
-- [OmarElGabry] [PR](https://github.com/panique/huge/pull/693) session id regeneration in certain situations
-- [OmarElGabry] [PR](https://github.com/panique/huge/pull/693) encrypted cookies
-- [OmarElGabry] [PR](https://github.com/panique/huge/pull/693) new encryption class
-- [OmarElGabry] [PR](https://github.com/panique/huge/pull/693) anti-CSRF feature (used in login and username change forms) 
-- [josh-bridge] [PR](https://github.com/panique/huge/pull/689) logged-in user can now change password
-- [justincdotme] [PR](https://github.com/panique/huge/pull/684) better code for brute-force blocking when logging in
-- [panique] soft autoinstaller improvements
-- [panique] updated dependencies to current versions
-- [Kent55/panique] XSS protection filter
-- [FAlbanni] XSS protection with better session/cookie, now only allowed on used domain 
-- [panique] there's now a simple Favicon and a fallback to avoid browsers hammering the application requesting favicons
-- [panique] application has now a page title
-- [panique] avatar upload feature can now handle jpg, png, gif
-- [panique/tankerkiller125] avatars folder now does not run any PHP code (security improvement) 
-- [tysonlist] [#657] send user back to last-visited page after successful login (when not being logged in first)
-- [sandropons] anti-brute-force feature for login process
-- [panique] removed old Facebook texts (as Login-via-Facebook feature was removed since 3.0)
-- [oisian/ldmusic] [#608] Deletion / suspension of users, Admin menu
-- [panique] [#654](https://github.com/panique/huge/issues/654) little frontend navi bug fixed
-- [Dominic28] [PR](https://github.com/panique/huge/pull/645) added checkboxes to request class
-- [Dominic28] [PR](https://github.com/panique/huge/pull/644) code style fixes
-- [M0ritzWeide] [PR](https://github.com/panique/huge/pull/635) added browser caching
-- [modInfo/panique] [PR](https://github.com/panique/huge/pull/647) added missing view table column  
-
 ## 3.1
 
 Code Quality at Scrutinizer 9.7/10, at Code Climate 3.9/4
