@@ -11,16 +11,25 @@ class AppController extends Controller
     public function __construct()
     {
         parent::__construct();
-        //Auth::checkAuthentication();
+        Auth::checkAuthentication();
     }
 
-    public function listaps(){
-        $this->View->renderJSON(AppModel::getAps());
+    public function listaps($state){
+        if (is_bool($state)) {
+            $this->View->renderJSON(AppModel::listApps($state));
+            return true;
+        } else {
+            Redirect::to('error/404');
+            return false;
+        }
+
     }
 
     public function index()
     {
-        $this->View->renderWithoutHeaderAndFooter('app/start');
+        $this->View->renderWithoutHeaderAndFooter('app/start', array(
+            'apps' => AppModel::listApps(true),
+        ));
     }
 
     public function enable($app_ID) {

@@ -180,7 +180,7 @@
     <div class="tile-area tile-area-scheme-dark fg-white" style="height: 100%; max-height: 100% !important;">
         <h1 class="tile-area-title">Start</h1>
         <div class="tile-area-controls">
-            <button class="image-button icon-right bg-transparent fg-white bg-hover-dark no-border"><span class="sub-header no-margin text-light">$user Name</span> <span class="icon mif-user"></span></button>
+            <a href="<?php echo Config::get('URL')?>profile/showprofile/<?php echo Session::get('user_id')?>" class="image-button icon-right bg-transparent fg-white bg-hover-dark no-border"><span class="sub-header no-margin text-light"><?php echo Session::get('user_name')?></span> <span class="icon mif-user"></span></a>
             <button class="square-button bg-transparent fg-white bg-hover-dark no-border" onclick="showCharms('#charmSearch')"><span class="mif-search"></span></button>
             <button class="square-button bg-transparent fg-white bg-hover-dark no-border" onclick="showCharms('#charmSettings')"><span class="mif-cog"></span></button>
             <a href="<?php echo Config::get('URL')?>login/logout" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span class="mif-switch"></span></a>
@@ -190,189 +190,20 @@
             <span class="tile-group-title">General</span>
 
             <div class="tile-container">
+                <?php
+                    $apps = $this->apps;
+                foreach ($apps as $key => $value) {?>
 
-                <a href="http://calendar.google.com" class="tile bg-indigo fg-white" data-role="tile">
+                <a href="<?php echo $value['base_url']?>" class="<?php echo $value['size']?> bg-<?php echo $value['colour_bg']?> fg-<?php echo $value['colour_fg']?>" data-role="tile">
                     <div class="tile-content iconic">
-                        <span class="icon mif-calendar"></span>
+                        <span class="icon mif-<?php echo $value['icon']?>"></span>
                     </div>
-                    <span class="tile-label">Calendar</span>
+                    <span class="tile-label"><?php echo $value['name']?></span>
                 </a>
+                <?php
 
-                <div class="tile bg-darkBlue fg-white" data-role="tile" onclick="document.location.href='http://gmail.com'">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-envelop"></span>
-                    </div>
-                    <span class="tile-label">Inbox</span>
-                </div>
-
-                <div class="tile-large bg-steel fg-white" data-role="tile" data-on-click="document.location.href='http://forecast.io'">
-                    <div class="tile-content" id="weather_bg" style="background: top left no-repeat; background-size: cover">
-                        <div class="padding10">
-                            <h1 id="weather_icon" style="font-size: 6em;position: absolute; top: 10px; right: 10px;"></h1>
-                            <h1 id="city_temp"></h1>
-                            <h2 id="city_name" class="text-light"></h2>
-                            <h4 id="city_weather"></h4>
-                            <p id="city_weather_daily"></p>
-
-                            <p class="no-margin text-shadow">Pressure: <span class="text-bold" id="pressure"></span> mm</p>
-                            <p class="no-margin text-shadow">Ozone: <span class="text-bold" id="ozone"></span></p>
-                            <p class="no-margin text-shadow">Wind bearing: <span class="text-bold" id="wind_bearing"></span></p>
-                            <p class="no-margin text-shadow">Wind speed: <span class="text-bold" id="wind_speed">0</span> m/s</p>
-                        </div>
-                    </div>
-                    <span class="tile-label">Weather</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="tile-group double">
-            <span class="tile-group-title">Images</span>
-            <div class="tile-container">
-                <div class="tile-wide" data-role="tile" data-effect="slideLeft">
-                    <div class="tile-content">
-                        <a href="http://google.com/search?q=bear" class="live-slide"><img src="<?php echo Config::get('URL')?>images/1.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=cat" class="live-slide"><img src="<?php echo Config::get('URL')?>images/2.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=dog" class="live-slide"><img src="<?php echo Config::get('URL')?>images/3.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=eagle" class="live-slide"><img src="<?php echo Config::get('URL')?>images/4.jpg" data-role="fitImage" data-format="fill"></a>
-                        <a href="http://google.com/search?q=fox" class="live-slide"><img src="<?php echo Config::get('URL')?>images/5.jpg" data-role="fitImage" data-format="fill"></a>
-                    </div>
-                    <div class="tile-label">Gallery</div>
-                </div>
-                <div class="tile" data-role="tile" data-role="tile" data-effect="slideUpDown">
-                    <div class="tile-content">
-                        <div class="live-slide"><img src="<?php echo Config::get('URL')?>images/me.jpg" data-role="fitImage" data-format="fill"></div>
-                        <div class="live-slide"><img src="<?php echo Config::get('URL')?>images/spface.jpg" data-role="fitImage" data-format="fill"></div>
-                    </div>
-                    <div class="tile-label">Photos</div>
-                </div>
-                <div class="tile-small bg-amber fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-video-camera"></span>
-                    </div>
-                </div>
-                <div class="tile-small bg-green fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-gamepad"></span>
-                    </div>
-                </div>
-                <div class="tile-small bg-pink fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-headphones"></span>
-                    </div>
-                </div>
-                <div class="tile-small bg-yellow fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-lock"></span>
-                    </div>
-                </div>
-
-                <div class="tile-wide bg-orange fg-white" data-role="tile">
-                    <div class="tile-content image-set">
-                        <img src="<?php echo Config::get('URL')?>images/jeki_chan.jpg">
-                        <img src="<?php echo Config::get('URL')?>images/shvarcenegger.jpg">
-                        <img src="<?php echo Config::get('URL')?>images/vin_d.jpg">
-                        <img src="<?php echo Config::get('URL')?>images/jolie.jpg">
-                        <img src="<?php echo Config::get('URL')?>images/jek_vorobey.jpg">
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="tile-group one">
-            <span class="tile-group-title">Office</span>
-
-            <div class="tile-small bg-blue" data-role="tile">
-                <div class="tile-content iconic">
-                    <img src="<?php echo Config::get('URL')?>images/outlook.png" class="icon">
-                </div>
-            </div>
-            <div class="tile-small bg-darkBlue" data-role="tile">
-                <div class="tile-content iconic">
-                    <img src="<?php echo Config::get('URL')?>images/word.png" class="icon">
-                </div>
-            </div>
-            <div class="tile-small bg-green" data-role="tile">
-                <div class="tile-content iconic">
-                    <img src="<?php echo Config::get('URL')?>images/excel.png" class="icon">
-                </div>
-            </div>
-            <div class="tile-small bg-red" data-role="tile">
-                <div class="tile-content iconic">
-                    <img src="<?php echo Config::get('URL')?>images/access.png" class="icon">
-                </div>
-            </div>
-            <div class="tile-small bg-orange" data-role="tile">
-                <div class="tile-content iconic">
-                    <img src="<?php echo Config::get('URL')?>images/powerpoint.png" class="icon">
-                </div>
-            </div>
-        </div>
-
-        <div class="tile-group double">
-            <span class="tile-group-title">Games</span>
-            <div class="tile-container">
-                <div class="tile" data-role="tile">
-                    <div class="tile-content">
-                        <img src="<?php echo Config::get('URL')?>images/grid2.jpg" data-role="fitImage" data-format="square">
-                    </div>
-                </div>
-                <div class="tile-small" data-role="tile">
-                    <div class="tile-content">
-                        <img src="<?php echo Config::get('URL')?>images/Battlefield_4_Icon.png" data-role="fitImage" data-format="square">
-                    </div>
-                </div>
-                <div class="tile-small" data-role="tile">
-                    <div class="tile-content">
-                        <img src="<?php echo Config::get('URL')?>images/Crysis-2-icon.png" data-role="fitImage" data-format="square" data-frame-color="bg-steel">
-                    </div>
-                </div>
-                <div class="tile-small" data-role="tile">
-                    <div class="tile-content">
-                        <img src="<?php echo Config::get('URL')?>images/WorldofTanks.png" data-role="fitImage" data-format="square" data-frame-color="bg-dark">
-                    </div>
-                </div>
-                <div class="tile-small" data-role="tile">
-                    <div class="tile-content">
-                        <img src="<?php echo Config::get('URL')?>images/halo.jpg" data-role="fitImage" data-format="square">
-                    </div>
-                </div>
-                <div class="tile-wide bg-green fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <img src="<?php echo Config::get('URL')?>images/x-box.png" class="icon">
-                    </div>
-                    <div class="tile-label">X-Box Live</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tile-group double">
-            <span class="tile-group-title">Other</span>
-            <div class="tile-container">
-                <div class="tile bg-teal fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-pencil"></span>
-                    </div>
-                    <span class="tile-label">Editor</span>
-                </div>
-                <div class="tile bg-darkGreen fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-shopping-basket"></span>
-                    </div>
-                    <span class="tile-label">Store</span>
-                </div>
-                <div class="tile bg-cyan fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-skype"></span>
-                    </div>
-                    <div class="tile-label">Skype</div>
-                </div>
-                <div class="tile bg-darkBlue fg-white" data-role="tile">
-                    <div class="tile-content iconic">
-                        <span class="icon mif-cloud"></span>
-                    </div>
-                    <span class="tile-label">OneDrive</span>
-                </div>
+                }
+                ?>
             </div>
         </div>
     </div>

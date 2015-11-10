@@ -25,7 +25,7 @@ class LoginController extends Controller
         if (LoginModel::isUserLoggedIn()) {
             Redirect::home();
         } else {
-            $this->View->render('login/index');
+            $this->View->renderWithoutHeaderAndFooter('login/login');
         }
     }
 
@@ -39,9 +39,9 @@ class LoginController extends Controller
             Request::post('user_name'), Request::post('user_password'), Request::post('set_remember_me_cookie')
         );
 
-        // check login status: if true, then redirect user login/showProfile, if false, then to login form again
+        // check login status: if true, then redirect user to app, if false, then to login form again
         if ($login_successful) {
-            Redirect::to('login/showProfile');
+            Redirect::to('app');
         } else {
             Redirect::to('login/index');
         }
