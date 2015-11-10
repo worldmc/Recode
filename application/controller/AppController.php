@@ -27,7 +27,7 @@ class AppController extends Controller
 
     public function index()
     {
-        $this->View->renderWithoutHeaderAndFooter('app/start', array(
+        $this->View->render('app/start', array(
             'apps' => AppModel::listApps(true),
         ));
     }

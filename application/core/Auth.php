@@ -25,4 +25,35 @@ class Auth
             exit();
         }
     }
+
+    /**
+     * Check Acces function. compares your acces level to the set acces levels in this class. you have acces if your id is equal or bigger then the set int.
+     * @param $requested
+     * @return bool
+     */
+    public static function checkAcces($requested) {
+        if (is_string($requested)){
+            if ($requested == "beamer") {
+                $requested = 4;
+            } elseif ($requested == "admin") {
+                $requested = 7;
+            } elseif ($requested == "super_admin") {
+                $requested = 9;
+            } elseif ($requested == "premium") {
+                $requested = 2;
+            } elseif ($requested == "user") {
+                $requested = 1;
+            } else{
+                return false;
+            }
+        }
+        $user_data = UserModel::getUserDataByUsername(Session::get('user_name'));
+
+        if ($requested <= $user_data['user_account_type']) {
+            return true;
+        } else {
+            return false;
+        }
+        return false;
+    }
 }
